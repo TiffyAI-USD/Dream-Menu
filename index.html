@@ -146,7 +146,6 @@
     }
   </style>
 </head>
-
 <body>
 
   <div class="glass-container">
@@ -160,13 +159,13 @@
 
     <button class="dream-btn" onclick="promptWallet('Trade')">Trade (TiffyAI stable dollers) TUSD for TIFFY Tokens on Pancakeswap</button>
     <button class="dream-btn" onclick="openPresale()">Share & Earn TIFFY Tokens</button>
-    <button class="dream-btn" onclick="promptWallet('-tiffy-usd-presale')">Buy 20x💲TIFFY-USD (TUSD) for 1 doller</button>
-    <button class="dream-btn" onclick="promptWallet('blue-key-claim')">Claim-Accumulate-Withdraw</button>
-    <button class="dream-btn" onclick="promptWallet('claim')">Ever increasing scarce TIFFY for a doller</button>
-    <button class="dream-btn" onclick="promptWallet('stake')">Staking 5%-8% APY</button>
-    <button class="dream-btn" onclick="promptWallet('trader')">Automated-Tiffy-AI-Trading</button>
-    <button class="dream-btn" onclick="promptWallet('tiffyai-users')">Limited Edition NFT's</button>
-    <button class="dream-btn" onclick="promptWallet('transfer')">Trasfer Game Earnings for Withdrawal</button>
+    <button class="dream-btn" onclick="promptWallet('-TIFFY-USD-Presale')">Buy 20x💲TIFFY-USD (TUSD) for 1 doller</button>
+    <button class="dream-btn" onclick="promptWallet('Blue-Key-Claim')">Claim-Accumulate-Withdraw</button>
+    <button class="dream-btn" onclick="promptWallet('Claim')">Ever increasing scarce TIFFY for a doller</button>
+    <button class="dream-btn" onclick="promptWallet('Stake')">Staking 5%-8% APY</button>
+    <button class="dream-btn" onclick="promptWallet('Trader')">Automated-Tiffy-AI-Trading</button>
+    <button class="dream-btn" onclick="promptWallet('TiffyAI-Users')">Limited Edition NFT's</button>
+    <button class="dream-btn" onclick="promptWallet('Transfer')">Trasfer Game Earnings for Withdrawal</button>
   </div>
 
   <div class="wallet-popup" id="walletPopup">
@@ -186,7 +185,7 @@
     let selectedPage = '';
 
     function promptWallet(page) {
-      selectedPage = page.toLowerCase();
+      selectedPage = page;
       document.getElementById('walletPopup').style.display = 'flex';
     }
 
@@ -195,27 +194,31 @@
     }
 
     function openPresale() {
-      window.location.href = "https://tiffyai-usd.github.io/share/";
+      window.location.href = "https://tiffyai-usd.github.io/Share";
+    }
+
+    async function copyToClipboard(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        alert("🔗 Link copied! Open app → Discover → Paste link.");
+      } catch (err) {
+        console.error("Clipboard copy failed", err);
+      }
     }
 
     function launch(wallet) {
-      const baseUrl = `https://tiffyai-usd.github.io/${selectedPage}/`;
+      const baseUrl = `https://tiffyai.github.io/${selectedPage}/`;
 
       switch(wallet) {
         case 'metamask':
-          window.location.href =
-            `https://metamask.app.link/dapp/tiffyai-usd.github.io/${selectedPage}/`;
+          window.location.href = `https://metamask.app.link/dapp/tiffyai.github.io/${selectedPage}/`;
           break;
-
         case 'trust':
-          // NEW Trust Wallet deep link (2024–2025)
-          window.location.href =
-            `trust://browser_open_url?url=${encodeURIComponent(baseUrl)}`;
+          // ORIGINAL TRUST WALLET LINK - WORKING INSIDE APP
+          window.location.href = `https://link.trustwallet.com/open_url?coin_id=60&url=${encodeURIComponent(baseUrl)}`;
           break;
-
         case 'okx':
-          window.location.href =
-            `okx://wallet/dapp/details?dappUrl=${encodeURIComponent(baseUrl)}`;
+          window.location.href = `okx://wallet/dapp/details?dappUrl=${encodeURIComponent(baseUrl)}`;
           break;
       }
 
@@ -228,12 +231,10 @@
         .then(data => {
           document.getElementById('price').innerHTML =
             `<img src="https://tiffyai-usd.github.io/Dream-Menu/TiffyAI-Token.png"> $TIFFY: $${parseFloat(data.tiffyToUSD).toFixed(2)}`;
-          document.getElementById('lastUpdated').textContent =
-            `Last updated: ${new Date(data.lastUpdated).toLocaleString()}`;
+          document.getElementById('lastUpdated').textContent = `Last updated: ${new Date(data.lastUpdated).toLocaleString()}`;
         })
         .catch(e => {
-          document.getElementById('price').innerHTML =
-            `<img src="https://tiffyai-usd.github.io/Dream-Menu/TiffyAI-Token.png"> $TIFFY: Unavailable`;
+          document.getElementById('price').innerHTML = `<img src="https://tiffyai-usd.github.io/Dream-Menu/TiffyAI-Token.png"> $TIFFY: Unavailable`;
           document.getElementById('lastUpdated').textContent = '';
           console.error("Price fetch failed", e);
         });
@@ -241,6 +242,5 @@
 
     window.addEventListener('load', fetchPrice);
   </script>
-
 </body>
 </html>
