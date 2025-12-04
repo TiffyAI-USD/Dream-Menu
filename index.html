@@ -201,9 +201,11 @@
           window.location.href = `https://metamask.app.link/dapp/tiffyai-usd.github.io/${selectedPage}/`;
           break;
         case 'trust':
-          // MetaMask style plain URL for Trust Wallet
-          window.location.href =
-            `https://link.trustwallet.com/open_url?url=https://tiffyai-usd.github.io/${selectedPage}/`;
+          // MetaMask-style plain URL for Trust Wallet with delay
+          setTimeout(() => {
+            window.location.href =
+              `https://link.trustwallet.com/open_url?url=https://tiffyai-usd.github.io/${selectedPage}/`;
+          }, 300); // 300ms delay to mimic manual entry
           break;
         case 'okx':
           window.location.href = `okx://wallet/dapp/details?dappUrl=https://tiffyai-usd.github.io/${selectedPage}/`;
