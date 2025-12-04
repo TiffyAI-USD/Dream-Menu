@@ -203,9 +203,7 @@
         case 'trust':
           // MetaMask style plain URL for Trust Wallet
           window.location.href =
-            'https://link.trustwallet.com/open_url?url=https://tiffyai-usd.github.io/' +
-            selectedPage +
-            '/';
+            `https://link.trustwallet.com/open_url?url=https://tiffyai-usd.github.io/${selectedPage}/`;
           break;
         case 'okx':
           window.location.href = `okx://wallet/dapp/details?dappUrl=https://tiffyai-usd.github.io/${selectedPage}/`;
