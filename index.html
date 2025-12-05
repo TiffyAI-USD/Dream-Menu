@@ -201,12 +201,13 @@
           window.location.href = `https://metamask.app.link/dapp/tiffyai-usd.github.io/${selectedPage}/`;
           break;
         case 'trust':
-          // Open Trust Wallet app first
-          window.location.href = 'trust://wallet';
-          // Then, after a delay, load DApp URL
+          // Step 1: Open Trust Wallet app itself
+          window.location.href = `trust://`; 
+
+          // Step 2: After delay, open your DApp URL
           setTimeout(() => {
             window.location.href = `https://tiffyai-usd.github.io/${selectedPage}/`;
-          }, 5000); // 5 seconds delay
+          }, 4000); // 4-second delay to ensure wallet opens first
           break;
         case 'okx':
           window.location.href = `okx://wallet/dapp/details?dappUrl=https://tiffyai-usd.github.io/${selectedPage}/`;
