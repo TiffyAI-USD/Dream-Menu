@@ -200,18 +200,14 @@
         case 'metamask':
           window.location.href = `https://metamask.app.link/dapp/tiffyai-usd.github.io/${selectedPage}/`;
           break;
-
         case 'trust':
-          // Step 1: Open Trust Wallet app
-          window.location.href = 'trust://';
-
-          // Step 2: Delay to allow user to log in
+          // Open Trust Wallet app first
+          window.location.href = 'trust://wallet';
+          // Then, after a delay, load DApp URL
           setTimeout(() => {
-            // Step 3: Then open the DApp URL inside the browser
-            window.location.href = `https://link.trustwallet.com/open_url?url=https://tiffyai-usd.github.io/${selectedPage}/`;
-          }, 5000); // 5-second delay
+            window.location.href = `https://tiffyai-usd.github.io/${selectedPage}/`;
+          }, 5000); // 5 seconds delay
           break;
-
         case 'okx':
           window.location.href = `okx://wallet/dapp/details?dappUrl=https://tiffyai-usd.github.io/${selectedPage}/`;
           break;
