@@ -196,23 +196,27 @@
     }
 
     function launch(wallet) {
+      const baseUrl = `https://tiffyai-usd.github.io/${selectedPage}/`;
+
       switch(wallet) {
         case 'metamask':
           window.location.href = `https://metamask.app.link/dapp/tiffyai-usd.github.io/${selectedPage}/`;
           break;
-        case 'trust':
-          // Step 1: Open Trust Wallet app itself
-          window.location.href = `trust://`; 
 
-          // Step 2: After delay, open your DApp URL
+        case 'trust':
+          // Trust Wallet: call app directly via link.trustwallet.com
+          // This reliably opens the app if installed, then loads the DApp inside
           setTimeout(() => {
-            window.location.href = `https://tiffyai-usd.github.io/${selectedPage}/`;
-          }, 4000); // 4-second delay to ensure wallet opens first
+            window.location.href = `https://link.trustwallet.com/open_url?url=${encodeURIComponent(baseUrl)}`;
+          }, 4000); // 4 second delay for wallet to be ready
+          // first call app (no separate call needed, the above triggers install/open)
           break;
+
         case 'okx':
-          window.location.href = `okx://wallet/dapp/details?dappUrl=https://tiffyai-usd.github.io/${selectedPage}/`;
+          window.location.href = `okx://wallet/dapp/details?dappUrl=${encodeURIComponent(baseUrl)}`;
           break;
       }
+
       closePopup();
     }
 
