@@ -169,9 +169,6 @@
     © 2025 <a href="https://www.tiffyai.co.za" target="_blank">Official Website: www.tiffyai.co.za</a>
   </div>
 
-  <script src="https://unpkg.com/@walletconnect/web3-provider@1.7.8/dist/umd/index.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.10.0-rc.0/web3.min.js"></script>
-
   <script>
     let selectedPage = '';
 
@@ -188,44 +185,49 @@
       window.location.href = "https://tiffyai-usd.github.io/Share";
     }
 
-    async function launch(wallet) {
+    // === FINAL LAUNCH FUNCTION — TRUST WALLET FIXED ===
+    function launch(wallet) {
       closePopup();
-      const dappUrl = `https://tiffyai-usd.github.io/${selectedPage}/`;
 
-      if(wallet === 'metamask') {
-        window.location.href = `https://metamask.app.link/dapp/${dappUrl}`;
-        return;
+      // === UPDATE FOLDER NAMES (NO HYPHENS!) ===
+      const pageMap = {
+        'Trade': 'Trade',
+        'TIFFY-USD-Presale': 'TIFFYUSDPresale',  // ← YOUR NEW FOLDER
+        'Blue-Key-Claim': 'BlueKeyClaim',
+        'Claim': 'Claim',
+        'Stake': 'Stake',
+        'Trader': 'Trader',
+        'TiffyAI-Users': 'TiffyAIUsers',
+        'Transfer': 'Transfer'
+      };
+
+      const folder = pageMap[selectedPage] || selectedPage;
+      const finalUrl = `https://tiffyai-usd.github.io/${folder}/index.html`;
+
+      let deepLink = '';
+
+      if (wallet === 'metamask') {
+        deepLink = `https://metamask.app.link/dapp/${finalUrl.replace('https://', '')}`;
+      }
+      else if (wallet === 'okx') {
+        deepLink = `okx://wallet/dapp/details?dappUrl=${encodeURIComponent(finalUrl)}`;
+      }
+      else if (wallet === 'trust') {
+        // === 2-STEP TRICK: OPEN DAPP → INJECT URL AFTER 1.2s ===
+        const script = `
+          setTimeout(() => {
+            window.location.href = "${finalUrl}";
+          }, 1200);
+        `;
+        const blob = new Blob([script], { type: 'text/javascript' });
+        const scriptUrl = URL.createObjectURL(blob);
+        deepLink = `https://link.trustwallet.com/open_url?mode=external&url=${encodeURIComponent(scriptUrl)}`;
       }
 
-      if(wallet === 'okx') {
-        window.location.href = `okx://wallet/dapp/details?dappUrl=${dappUrl}`;
-        return;
-      }
-
-      if(wallet === 'trust') {
-        try {
-          // Initialize WalletConnect provider
-          const provider = new WalletConnectProvider.default({
-            rpc: {
-              56: "https://bsc-dataseed.binance.org/",
-              1: "https://rpc.ankr.com/eth"
-            }
-          });
-
-          await provider.enable();
-
-          const wcUri = encodeURIComponent(provider.wc.uri);
-
-          // Trigger Trust Wallet (multi-layer)
-          window.location.href = `trustwallet://wc?uri=${wcUri}`;
-
-        } catch(err) {
-          console.error("Trust Wallet Connection Failed:", err);
-          alert("Trust Wallet Connection Failed. Open Trust Wallet and retry.");
-        }
-      }
+      window.location.href = deepLink;
     }
 
+    // === PRICE FETCH ===
     function fetchPrice() {
       fetch('https://tiffyai-usd.github.io/TIFFY-Market-Value/price.json')
         .then(r => r.json())
