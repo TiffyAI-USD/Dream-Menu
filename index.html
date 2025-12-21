@@ -136,7 +136,8 @@
 
     .top-banner a { color: #00ffff; text-decoration: underline; }
 
-    #trustMessagePopup {
+    /* New Trust confirmation popup */
+    #trustConfirmPopup {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
@@ -153,15 +154,19 @@
       box-sizing: border-box;
     }
 
-    #trustMessagePopup p {
+    #trustConfirmPopup p {
       margin: 15px 0;
       text-shadow: 0 0 10px #ff00ff;
       max-width: 90%;
     }
 
-    #trustMessagePopup button {
+    #trustConfirmPopup .buttons {
       margin-top: 30px;
+    }
+
+    #trustConfirmPopup button {
       padding: 14px 30px;
+      margin: 0 10px;
       background: #00ffff;
       color: #000;
       border: none;
@@ -169,6 +174,15 @@
       font-size: 18px;
       font-weight: bold;
       cursor: pointer;
+    }
+
+    #trustConfirmPopup button.cancel {
+      background: #ff00ff;
+    }
+
+    .top-banner:last-child {
+      position: fixed;
+      bottom: 10px;
     }
   </style>
 </head>
@@ -201,12 +215,14 @@
     </div>
   </div>
 
-  <div id="trustMessagePopup">
-    <p>Trust Wallet DApp Browser opened!</p>
-    <p>URL already copied ✅</p>
-    <p>Paste in address bar → Go</p>
-    <p>Wallet connects automatically</p>
-    <button onclick="document.getElementById('trustMessagePopup').style.display='none';">OK</button>
+  <!-- New Trust confirmation popup -->
+  <div id="trustConfirmPopup">
+    <p>Open in Trust Wallet?</p>
+    <p>This will switch to Trust Wallet's DApp browser<br>so you can connect and paste safely.</p>
+    <div class="buttons">
+      <button onclick="confirmTrustOpen()">OK</button>
+      <button class="cancel" onclick="cancelTrustOpen()">Cancel</button>
+    </div>
   </div>
 
   <div class="top-banner" style="position:fixed; bottom:10px;">
@@ -215,6 +231,7 @@
 
   <script>
     let selectedPage = '';
+    let targetUrl = '';
 
     function promptWallet(page) {
       selectedPage = page;
@@ -244,30 +261,36 @@
       };
 
       const folder = pageMap[selectedPage] || selectedPage;
-      const finalUrl = `https://tiffyai-usd.github.io/${folder}/`;
+      targetUrl = `https://tiffyai-usd.github.io/${folder}/`;
 
       if (wallet === 'metamask') {
-        window.location.href = `https://metamask.app.link/dapp/${finalUrl.replace('https://', '')}`;
+        window.location.href = `https://metamask.app.link/dapp/${targetUrl.replace('https://', '')}`;
       }
       else if (wallet === 'okx') {
-        window.location.href = `okx://wallet/dapp/details?dappUrl=${encodeURIComponent(finalUrl)}`;
+        window.location.href = `okx://wallet/dapp/details?dappUrl=${encodeURIComponent(targetUrl)}`;
       }
       else if (wallet === 'trust') {
-        // Copy URL first
-        navigator.clipboard.writeText(finalUrl).catch(() => {
-          alert('Please copy manually: ' + finalUrl);
-        });
-
-        // Open Trust Wallet DApp browser directly to your page with BNB Chain (coin_id=56)
-        const deepLink = `https://link.trustwallet.com/open_url?coin_id=56&url=${encodeURIComponent(finalUrl)}`;
-
-        window.location.href = deepLink;
-
-        // Show popup after switch (honest guidance if needed)
-        setTimeout(() => {
-          document.getElementById('trustMessagePopup').style.display = 'flex';
-        }, 800);
+        // Show confirmation popup only for Trust
+        document.getElementById('trustConfirmPopup').style.display = 'flex';
       }
+    }
+
+    function confirmTrustOpen() {
+      document.getElementById('trustConfirmPopup').style.display = 'none';
+
+      // Copy URL to clipboard
+      navigator.clipboard.writeText(targetUrl).catch(() => {
+        alert('Please copy manually: ' + targetUrl);
+      });
+
+      // Deep link with coin_id=56 for BSC (Pancakeswap)
+      const deepLink = `https://link.trustwallet.com/open_url?coin_id=56&url=${encodeURIComponent(targetUrl)}`;
+
+      window.location.href = deepLink;
+    }
+
+    function cancelTrustOpen() {
+      document.getElementById('trustConfirmPopup').style.display = 'none';
     }
 
     function fetchPrice() {
