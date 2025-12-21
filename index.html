@@ -136,7 +136,6 @@
 
     .top-banner a { color: #00ffff; text-decoration: underline; }
 
-    /* Trust confirmation + instruction popup */
     #trustPopup {
       position: fixed;
       top: 0; left: 0;
@@ -205,7 +204,6 @@
     </div>
   </div>
 
-  <!-- Trust popup -->
   <div id="trustPopup">
     <p>Open in Trust Wallet?</p>
     <p>URL will be copied automatically</p>
@@ -261,25 +259,23 @@
         window.location.href = `okx://wallet/dapp/details?dappUrl=${encodeURIComponent(targetUrl)}`;
       }
       else if (wallet === 'trust') {
-        // Show confirmation popup
         document.getElementById('trustPopup').style.display = 'flex';
       }
     }
 
     function executeTrust() {
-      // Copy URL
+      // Copy URL to clipboard
       navigator.clipboard.writeText(targetUrl).catch(() => {
-        alert('Copy manually: ' + targetUrl);
+        alert('Please copy manually: ' + targetUrl);
       });
 
-      // Open ONLY the Trust Wallet app
-      window.location.href = 'trust://';
+      // Open ONLY the Trust Wallet app - official universal link (works on Android + iOS)
+      window.location.href = 'https://link.trustwallet.com/open';
 
-      // Keep popup visible with instructions (it stays until user closes manually if needed)
-      // Change text to final instructions
+      // Update popup to instructions and keep it open until user dismisses
       document.querySelector('#trustPopup p:nth-of-type(1)').textContent = 'Trust Wallet opened!';
       document.querySelector('#trustPopup p:nth-of-type(2)').textContent = 'URL already copied ✅';
-      document.querySelector('#trustPopup p:nth-of-type(3)').textContent = 'Tap Discover → paste → go';
+      document.querySelector('#trustPopup p:nth-of-type(3)').textContent = 'Tap Discover (bottom menu) → paste → go';
       document.querySelector('#trustPopup div').innerHTML = '<button onclick="document.getElementById(\'trustPopup\').style.display=\'none\'">Got it</button>';
     }
 
