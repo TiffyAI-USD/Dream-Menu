@@ -135,6 +135,40 @@
     }
 
     .top-banner a { color: #00ffff; text-decoration: underline; }
+
+    /* New popup for Trust Wallet copy message */
+    #trustMessagePopup {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      flex-direction: column;
+      color: #00ffff;
+      font-size: 20px;
+      text-align: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    #trustMessagePopup p {
+      margin: 10px 0;
+      text-shadow: 0 0 10px #ff00ff;
+    }
+
+    #trustMessagePopup button {
+      margin-top: 20px;
+      padding: 12px 24px;
+      background: #00ffff;
+      color: #000;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -166,6 +200,13 @@
     </div>
   </div>
 
+  <!-- New Trust Wallet message popup -->
+  <div id="trustMessagePopup">
+    <p>URL has been copied to clipboard!</p>
+    <p>Open Trust Wallet → Browser (bottom menu) → Paste the URL in the address bar → Go</p>
+    <button onclick="document.getElementById('trustMessagePopup').style.display='none';">Got it</button>
+  </div>
+
   <div class="top-banner" style="position:fixed; bottom:10px;">
     © 2025 <a href="https://www.tiffyai.co.za" target="_blank">Official Website: www.tiffyai.co.za</a>
   </div>
@@ -186,7 +227,6 @@
       window.location.href = "https://tiffyai-usd.github.io/Share/";
     }
 
-    // === WORKING TRUST WALLET FIX - Direct with coin_id=56 (official & reliable Dec 2025) ===
     function launch(wallet) {
       closePopup();
 
@@ -204,20 +244,26 @@
       const folder = pageMap[selectedPage] || selectedPage;
       const finalUrl = `https://tiffyai-usd.github.io/${folder}/`;
 
-      let deepLink = '';
-
       if (wallet === 'metamask') {
-        deepLink = `https://metamask.app.link/dapp/${finalUrl.replace('https://', '')}`;
+        window.location.href = `https://metamask.app.link/dapp/${finalUrl.replace('https://', '')}`;
       }
       else if (wallet === 'okx') {
-        deepLink = `okx://wallet/dapp/details?dappUrl=${encodeURIComponent(finalUrl)}`;
+        window.location.href = `okx://wallet/dapp/details?dappUrl=${encodeURIComponent(finalUrl)}`;
       }
       else if (wallet === 'trust') {
-        // This is the official, proven method - direct URL + coin_id=56 forces full DApp mode & injection
-        deepLink = `https://link.trustwallet.com/open_url?coin_id=56&url=${encodeURIComponent(finalUrl)}`;
-      }
+        // Copy URL to clipboard
+        navigator.clipboard.writeText(finalUrl).then(() => {
+          // Show popup message
+          document.getElementById('trustMessagePopup').style.display = 'flex';
+        }).catch(() => {
+          // Fallback if clipboard fails
+          alert('Please copy this URL manually: ' + finalUrl + '\nThen paste in Trust Wallet Browser');
+          document.getElementById('trustMessagePopup').style.display = 'flex';
+        });
 
-      window.location.href = deepLink;
+        // Optional: Try to open Trust Wallet app (may open main screen)
+        window.location.href = 'trust://';
+      }
     }
 
     function fetchPrice() {
