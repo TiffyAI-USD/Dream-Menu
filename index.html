@@ -136,7 +136,7 @@
 
     .top-banner a { color: #00ffff; text-decoration: underline; }
 
-    /* New popup for Trust Wallet copy message */
+    /* Trust message popup */
     #trustMessagePopup {
       position: fixed;
       top: 0; left: 0;
@@ -200,11 +200,12 @@
     </div>
   </div>
 
-  <!-- New Trust Wallet message popup -->
+  <!-- Trust Wallet guidance popup -->
   <div id="trustMessagePopup">
-    <p>URL has been copied to clipboard!</p>
-    <p>Open Trust Wallet → Browser (bottom menu) → Paste the URL in the address bar → Go</p>
-    <button onclick="document.getElementById('trustMessagePopup').style.display='none';">Got it</button>
+    <p>URL copied to clipboard!</p>
+    <p>Trust Wallet opened → Tap "Discover" or "Browser" at bottom → Paste URL → Go</p>
+    <p>Full connection guaranteed.</p>
+    <button onclick="document.getElementById('trustMessagePopup').style.display='none';">OK</button>
   </div>
 
   <div class="top-banner" style="position:fixed; bottom:10px;">
@@ -251,17 +252,15 @@
         window.location.href = `okx://wallet/dapp/details?dappUrl=${encodeURIComponent(finalUrl)}`;
       }
       else if (wallet === 'trust') {
-        // Copy URL to clipboard
-        navigator.clipboard.writeText(finalUrl).then(() => {
-          // Show popup message
-          document.getElementById('trustMessagePopup').style.display = 'flex';
-        }).catch(() => {
-          // Fallback if clipboard fails
-          alert('Please copy this URL manually: ' + finalUrl + '\nThen paste in Trust Wallet Browser');
-          document.getElementById('trustMessagePopup').style.display = 'flex';
+        // Copy URL
+        navigator.clipboard.writeText(finalUrl).catch(() => {
+          alert('Copy this URL manually: ' + finalUrl);
         });
 
-        // Optional: Try to open Trust Wallet app (may open main screen)
+        // Show guidance popup
+        document.getElementById('trustMessagePopup').style.display = 'flex';
+
+        // Open Trust Wallet app (main screen) - reliable across Android/iOS
         window.location.href = 'trust://';
       }
     }
