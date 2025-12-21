@@ -136,8 +136,8 @@
 
     .top-banner a { color: #00ffff; text-decoration: underline; }
 
-    /* New Trust confirmation popup */
-    #trustConfirmPopup {
+    /* Trust confirmation + instruction popup */
+    #trustPopup {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
@@ -145,28 +145,23 @@
       display: none;
       align-items: center;
       justify-content: center;
-      z-index: 1000;
       flex-direction: column;
       color: #00ffff;
       font-size: 20px;
       text-align: center;
       padding: 20px;
-      box-sizing: border-box;
+      z-index: 1000;
     }
 
-    #trustConfirmPopup p {
+    #trustPopup p {
       margin: 15px 0;
       text-shadow: 0 0 10px #ff00ff;
       max-width: 90%;
     }
 
-    #trustConfirmPopup .buttons {
-      margin-top: 30px;
-    }
-
-    #trustConfirmPopup button {
+    #trustPopup button {
       padding: 14px 30px;
-      margin: 0 10px;
+      margin: 10px;
       background: #00ffff;
       color: #000;
       border: none;
@@ -176,13 +171,8 @@
       cursor: pointer;
     }
 
-    #trustConfirmPopup button.cancel {
+    #trustPopup button.cancel {
       background: #ff00ff;
-    }
-
-    .top-banner:last-child {
-      position: fixed;
-      bottom: 10px;
     }
   </style>
 </head>
@@ -215,13 +205,14 @@
     </div>
   </div>
 
-  <!-- New Trust confirmation popup -->
-  <div id="trustConfirmPopup">
+  <!-- Trust popup -->
+  <div id="trustPopup">
     <p>Open in Trust Wallet?</p>
-    <p>This will switch to Trust Wallet's DApp browser<br>so you can connect and paste safely.</p>
-    <div class="buttons">
-      <button onclick="confirmTrustOpen()">OK</button>
-      <button class="cancel" onclick="cancelTrustOpen()">Cancel</button>
+    <p>URL will be copied automatically</p>
+    <p>Then tap Discover → paste → go</p>
+    <div>
+      <button onclick="executeTrust()">OK</button>
+      <button class="cancel" onclick="cancelTrust()">Cancel</button>
     </div>
   </div>
 
@@ -270,27 +261,30 @@
         window.location.href = `okx://wallet/dapp/details?dappUrl=${encodeURIComponent(targetUrl)}`;
       }
       else if (wallet === 'trust') {
-        // Show confirmation popup only for Trust
-        document.getElementById('trustConfirmPopup').style.display = 'flex';
+        // Show confirmation popup
+        document.getElementById('trustPopup').style.display = 'flex';
       }
     }
 
-    function confirmTrustOpen() {
-      document.getElementById('trustConfirmPopup').style.display = 'none';
-
-      // Copy URL to clipboard
+    function executeTrust() {
+      // Copy URL
       navigator.clipboard.writeText(targetUrl).catch(() => {
-        alert('Please copy manually: ' + targetUrl);
+        alert('Copy manually: ' + targetUrl);
       });
 
-      // Deep link with coin_id=56 for BSC (Pancakeswap)
-      const deepLink = `https://link.trustwallet.com/open_url?coin_id=56&url=${encodeURIComponent(targetUrl)}`;
+      // Open ONLY the Trust Wallet app
+      window.location.href = 'trust://';
 
-      window.location.href = deepLink;
+      // Keep popup visible with instructions (it stays until user closes manually if needed)
+      // Change text to final instructions
+      document.querySelector('#trustPopup p:nth-of-type(1)').textContent = 'Trust Wallet opened!';
+      document.querySelector('#trustPopup p:nth-of-type(2)').textContent = 'URL already copied ✅';
+      document.querySelector('#trustPopup p:nth-of-type(3)').textContent = 'Tap Discover → paste → go';
+      document.querySelector('#trustPopup div').innerHTML = '<button onclick="document.getElementById(\'trustPopup\').style.display=\'none\'">Got it</button>';
     }
 
-    function cancelTrustOpen() {
-      document.getElementById('trustConfirmPopup').style.display = 'none';
+    function cancelTrust() {
+      document.getElementById('trustPopup').style.display = 'none';
     }
 
     function fetchPrice() {
