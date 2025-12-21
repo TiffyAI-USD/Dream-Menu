@@ -202,9 +202,9 @@
   </div>
 
   <div id="trustMessagePopup">
-    <p>Trust Wallet opened!</p>
-    <p>URL is copied to clipboard ✅</p>
-    <p>Go to Discover/Browser tab → Paste the URL in address bar → Go</p>
+    <p>Trust Wallet DApp Browser opened!</p>
+    <p>URL already copied ✅</p>
+    <p>Paste in address bar → Go</p>
     <p>Wallet connects automatically</p>
     <button onclick="document.getElementById('trustMessagePopup').style.display='none';">OK</button>
   </div>
@@ -253,15 +253,17 @@
         window.location.href = `okx://wallet/dapp/details?dappUrl=${encodeURIComponent(finalUrl)}`;
       }
       else if (wallet === 'trust') {
-        // Copy the URL first
+        // Copy URL first
         navigator.clipboard.writeText(finalUrl).catch(() => {
           alert('Please copy manually: ' + finalUrl);
         });
 
-        // Open Trust Wallet app reliably
-        window.location.href = 'trust://';
+        // Open Trust Wallet DApp browser directly to your page with BNB Chain (coin_id=56)
+        const deepLink = `https://link.trustwallet.com/open_url?coin_id=56&url=${encodeURIComponent(finalUrl)}`;
 
-        // Show honest popup after app switch
+        window.location.href = deepLink;
+
+        // Show popup after switch (honest guidance if needed)
         setTimeout(() => {
           document.getElementById('trustMessagePopup').style.display = 'flex';
         }, 800);
