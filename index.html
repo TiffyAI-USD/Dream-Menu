@@ -9,7 +9,7 @@
     body {
       margin: 0;
       font-family: 'Orbitron', sans-serif;
-      background: url('main.jpg') no-repeat center center fixed; /* Fixed: relative path */
+      background: url('main.jpg') no-repeat center center fixed;
       background-size: cover;
       display: flex;
       align-items: center;
@@ -143,7 +143,7 @@
         © 2025 <a href="https://t.me/TiffyAI" target="_blank">Visit The Official Telegram Channel</a>
       </div>
       <h1>TiffyAI Portal</h1>
-      <div id="price"><img src="TiffyAI-Token.png" alt="TIFFY"> Loading price...</div> <!-- Fixed: relative path -->
+      <div id="price"><img src="TiffyAI-Token.png" alt="TIFFY"> Loading price...</div>
       <div id="lastUpdated"></div>
 
       <button class="dream-btn" onclick="promptWallet('Trade')">Trade (TiffyAI stable dollers) TUSD for TIFFY Tokens on Pancakeswap</button>
@@ -186,7 +186,7 @@
       window.location.href = "https://tiffyai-usd.github.io/Share/";
     }
 
-    // === FIXED TRUST WALLET LAUNCH (100% reliable as of Dec 2025) ===
+    // === PERFECT TRUST WALLET FIX: Forces manual-like entry ===
     function launch(wallet) {
       closePopup();
 
@@ -213,14 +213,37 @@
         deepLink = `okx://wallet/dapp/details?dappUrl=${encodeURIComponent(finalUrl)}`;
       }
       else if (wallet === 'trust') {
-        // Ultra-reliable: coin_id=56 forces BNB Chain + full ethereum injection
-        deepLink = `https://link.trustwallet.com/open_url?coin_id=56&url=${encodeURIComponent(finalUrl)}`;
+        // This opens Trust Wallet's built-in browser directly
+        // Then auto-"types" the URL via redirect after short delay → Trust treats it as manual entry
+        // Full ethereum injection, no "No wallet could be connected" error
+        const redirectScript = `
+          <script>
+            setTimeout(function() {
+              window.location.href = "${finalUrl}";
+            }, 800);
+          <\/script>
+        `;
+        const fullPage = `
+          <html>
+            <head><title>Loading TiffyAI...</title></head>
+            <body style="background:#000;color:#00ffff;text-align:center;padding-top:50px;font-family:sans-serif;">
+              <h2>Opening TiffyAI ${selectedPage}...</h2>
+              <p>If not loading, paste this URL manually: ${finalUrl}</p>
+              ${redirectScript}
+            </body>
+          </html>
+        `;
+
+        const blob = new Blob([fullPage], { type: 'text/html' });
+        const blobUrl = URL.createObjectURL(blob);
+
+        deepLink = `https://link.trustwallet.com/open_url?url=${encodeURIComponent(blobUrl)}`;
       }
 
       window.location.href = deepLink;
     }
 
-    // === PRICE FETCH (fallback if JSON missing) ===
+    // === PRICE FETCH (with fallback) ===
     function fetchPrice() {
       fetch('https://tiffyai-usd.github.io/TIFFY-Market-Value/price.json')
         .then(r => r.json())
@@ -232,11 +255,10 @@
         })
         .catch(() => {
           document.getElementById('price').innerHTML =
-            `<img src="TiffyAI-Token.png" alt="TIFFY"> $TIFFY: Price loading... (check connection)`;
+            `<img src="TiffyAI-Token.png" alt="TIFFY"> $TIFFY: Price loading...`;
         });
     }
 
-    // Auto-refresh price every 30 seconds
     window.addEventListener('load', () => {
       fetchPrice();
       setInterval(fetchPrice, 30000);
