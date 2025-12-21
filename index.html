@@ -136,7 +136,6 @@
 
     .top-banner a { color: #00ffff; text-decoration: underline; }
 
-    /* Trust Wallet guidance popup */
     #trustMessagePopup {
       position: fixed;
       top: 0; left: 0;
@@ -202,13 +201,12 @@
     </div>
   </div>
 
-  <!-- Trust Wallet popup that appears AFTER opening the app -->
   <div id="trustMessagePopup">
-    <p>🔥 Trust Wallet DApp Browser is now open!</p>
-    <p>URL already copied to clipboard</p>
-    <p>Just paste it in the address bar at the top and hit Go</p>
-    <p>Full wallet connection guaranteed ✅</p>
-    <button onclick="document.getElementById('trustMessagePopup').style.display='none';">Got it!</button>
+    <p>Trust Wallet DApp Browser opened!</p>
+    <p>URL copied to clipboard ✅</p>
+    <p>Paste it in the address bar at the top → Go</p>
+    <p>Wallet will connect automatically</p>
+    <button onclick="document.getElementById('trustMessagePopup').style.display='none';">OK</button>
   </div>
 
   <div class="top-banner" style="position:fixed; bottom:10px;">
@@ -255,19 +253,20 @@
         window.location.href = `okx://wallet/dapp/details?dappUrl=${encodeURIComponent(finalUrl)}`;
       }
       else if (wallet === 'trust') {
-        // Step 1: Copy URL to clipboard
+        // Copy URL first
         navigator.clipboard.writeText(finalUrl).catch(() => {
-          alert('Copy manually: ' + finalUrl);
+          alert('Copy this URL: ' + finalUrl);
         });
 
-        // Step 2: Open Trust Wallet DApp browser directly (this reliably opens the browser tab)
-        window.location.href = 'trust://browser_enable';
+        // Open Trust Wallet DApp browser directly with the page + BNB chain for full injection
+        const deepLink = `https://link.trustwallet.com/open_url?coin_id=56&url=${encodeURIComponent(finalUrl)}`;
 
-        // Step 3: Show the popup immediately after (user sees it right before/after switch)
-        // Delay just a tiny bit to ensure smooth app switch
+        window.location.href = deepLink;
+
+        // Show popup right after (appears when user is in app or on switch)
         setTimeout(() => {
           document.getElementById('trustMessagePopup').style.display = 'flex';
-        }, 300);
+        }, 500);
       }
     }
 
