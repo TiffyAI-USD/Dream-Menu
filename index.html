@@ -186,7 +186,7 @@
       window.location.href = "https://tiffyai-usd.github.io/Share/";
     }
 
-    // === FINAL FIX: Opens Trust DApp browser blank first, then auto-navigates (mimics manual typing) ===
+    // === WORKING TRUST WALLET FIX - Direct with coin_id=56 (official & reliable Dec 2025) ===
     function launch(wallet) {
       closePopup();
 
@@ -213,32 +213,8 @@
         deepLink = `okx://wallet/dapp/details?dappUrl=${encodeURIComponent(finalUrl)}`;
       }
       else if (wallet === 'trust') {
-        // Create a tiny blank loading page that auto-redirects (Trust treats redirect as manual entry)
-        const loadingHtml = `
-          <!DOCTYPE html>
-          <html>
-            <head>
-              <title>TiffyAI Loading...</title>
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <style>
-                body { background:#000; color:#00ffff; font-family:sans-serif; text-align:center; padding-top:100px; }
-                h2 { font-size:24px; }
-              </style>
-            </head>
-            <body>
-              <h2>Loading TiffyAI ${selectedPage}...</h2>
-              <script>
-                setTimeout(() => { window.location.href = "${finalUrl}"; }, 500);
-              </script>
-            </body>
-          </html>
-        `;
-
-        const blob = new Blob([loadingHtml], { type: 'text/html' });
-        const blobUrl = URL.createObjectURL(blob);
-
-        // Open blank page in DApp browser (coin_id=56 ensures full injection mode)
-        deepLink = `https://link.trustwallet.com/open_url?coin_id=56&url=${encodeURIComponent(blobUrl)}`;
+        // This is the official, proven method - direct URL + coin_id=56 forces full DApp mode & injection
+        deepLink = `https://link.trustwallet.com/open_url?coin_id=56&url=${encodeURIComponent(finalUrl)}`;
       }
 
       window.location.href = deepLink;
