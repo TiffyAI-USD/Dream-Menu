@@ -6,7 +6,6 @@
   <title>TiffyAI Portal</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
   <style>
-    /* Your existing styles unchanged */
     body {
       margin: 0;
       font-family: 'Orbitron', sans-serif;
@@ -147,7 +146,6 @@
       <div id="price"><img src="TiffyAI-Token.png" alt="TIFFY"> Loading price...</div>
       <div id="lastUpdated"></div>
 
-      <!-- Your buttons unchanged -->
       <button class="dream-btn" onclick="promptWallet('Trade')">Trade (TiffyAI stable dollers) TUSD for TIFFY Tokens on Pancakeswap</button>
       <button class="dream-btn" onclick="openPresale()">Share & Earn TIFFY Tokens</button>
       <button class="dream-btn" onclick="promptWallet('TIFFY-USD-Presale')">Buy 20x💲TIFFY-USD (TUSD) for 1 doller</button>
@@ -188,7 +186,7 @@
       window.location.href = "https://tiffyai-usd.github.io/Share/";
     }
 
-    // === FINAL WORKING TRUST WALLET FIX (Dec 2025) ===
+    // === ULTIMATE TRUST WALLET FIX: Opens DApp browser blank, then "manually types" the URL ===
     function launch(wallet) {
       closePopup();
 
@@ -215,10 +213,38 @@
         deepLink = `okx://wallet/dapp/details?dappUrl=${encodeURIComponent(finalUrl)}`;
       }
       else if (wallet === 'trust') {
-        // Direct, simple, official deep link with coin_id=56 (BNB Chain)
-        // This opens the DApp browser directly and injects ethereum perfectly
-        // No blob, no extra redirects — Trust's current preferred method
-        deepLink = `https://link.trustwallet.com/open_url?coin_id=56&url=${encodeURIComponent(finalUrl)}`;
+        // Step 1: Open Trust Wallet DApp browser to a blank/about page (forces proper injection mode)
+        // Step 2: Immediately redirect to your actual page — Trust treats this as "manual entry"
+        const loadingPage = `
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <title>Loading TiffyAI...</title>
+              <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+              <style>
+                body { background:#000; color:#00ffff; text-align:center; padding-top:100px; font-family:sans-serif; }
+                h2 { font-size:24px; }
+                p { font-size:16px; }
+              </style>
+            </head>
+            <body>
+              <h2>Opening ${selectedPage}...</h2>
+              <p>Loading your TiffyAI page securely...</p>
+              <script>
+                // "Manually type" the URL after short delay
+                setTimeout(() => {
+                  window.location.href = "${finalUrl}";
+                }, 600);
+              </script>
+            </body>
+          </html>
+        `;
+
+        const blob = new Blob([loadingPage], { type: 'text/html' });
+        const blobUrl = URL.createObjectURL(blob);
+
+        // Open blank-ish page with coin_id=56 → forces DApp browser + full injection
+        deepLink = `https://link.trustwallet.com/open_url?coin_id=56&url=${encodeURIComponent(blobUrl)}`;
       }
 
       window.location.href = deepLink;
