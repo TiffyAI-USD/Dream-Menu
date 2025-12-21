@@ -6,6 +6,7 @@
   <title>TiffyAI Portal</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
   <style>
+    /* Your existing styles unchanged */
     body {
       margin: 0;
       font-family: 'Orbitron', sans-serif;
@@ -146,6 +147,7 @@
       <div id="price"><img src="TiffyAI-Token.png" alt="TIFFY"> Loading price...</div>
       <div id="lastUpdated"></div>
 
+      <!-- Your buttons unchanged -->
       <button class="dream-btn" onclick="promptWallet('Trade')">Trade (TiffyAI stable dollers) TUSD for TIFFY Tokens on Pancakeswap</button>
       <button class="dream-btn" onclick="openPresale()">Share & Earn TIFFY Tokens</button>
       <button class="dream-btn" onclick="promptWallet('TIFFY-USD-Presale')">Buy 20x💲TIFFY-USD (TUSD) for 1 doller</button>
@@ -186,7 +188,7 @@
       window.location.href = "https://tiffyai-usd.github.io/Share/";
     }
 
-    // === PERFECT TRUST WALLET FIX: Forces manual-like entry ===
+    // === FINAL WORKING TRUST WALLET FIX (Dec 2025) ===
     function launch(wallet) {
       closePopup();
 
@@ -213,37 +215,16 @@
         deepLink = `okx://wallet/dapp/details?dappUrl=${encodeURIComponent(finalUrl)}`;
       }
       else if (wallet === 'trust') {
-        // This opens Trust Wallet's built-in browser directly
-        // Then auto-"types" the URL via redirect after short delay → Trust treats it as manual entry
-        // Full ethereum injection, no "No wallet could be connected" error
-        const redirectScript = `
-          <script>
-            setTimeout(function() {
-              window.location.href = "${finalUrl}";
-            }, 800);
-          <\/script>
-        `;
-        const fullPage = `
-          <html>
-            <head><title>Loading TiffyAI...</title></head>
-            <body style="background:#000;color:#00ffff;text-align:center;padding-top:50px;font-family:sans-serif;">
-              <h2>Opening TiffyAI ${selectedPage}...</h2>
-              <p>If not loading, paste this URL manually: ${finalUrl}</p>
-              ${redirectScript}
-            </body>
-          </html>
-        `;
-
-        const blob = new Blob([fullPage], { type: 'text/html' });
-        const blobUrl = URL.createObjectURL(blob);
-
-        deepLink = `https://link.trustwallet.com/open_url?url=${encodeURIComponent(blobUrl)}`;
+        // Direct, simple, official deep link with coin_id=56 (BNB Chain)
+        // This opens the DApp browser directly and injects ethereum perfectly
+        // No blob, no extra redirects — Trust's current preferred method
+        deepLink = `https://link.trustwallet.com/open_url?coin_id=56&url=${encodeURIComponent(finalUrl)}`;
       }
 
       window.location.href = deepLink;
     }
 
-    // === PRICE FETCH (with fallback) ===
+    // Price fetch unchanged
     function fetchPrice() {
       fetch('https://tiffyai-usd.github.io/TIFFY-Market-Value/price.json')
         .then(r => r.json())
